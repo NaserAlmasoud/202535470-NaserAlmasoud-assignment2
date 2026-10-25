@@ -858,6 +858,42 @@ section {
   border-color: var(--danger);
 }
 
+.form .is-valid {
+  border-color: var(--success);
+}
+
+.form__label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.form__counter {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.form__counter.is-near {
+  color: var(--warning);
+}
+
+.form__counter.is-over {
+  color: var(--danger);
+}
+
+.form__draft {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-muted);
+}
+
+.form button:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
 .form__error {
   min-height: 1.2em;
   margin: 0;
@@ -868,7 +904,30 @@ section {
 
 .form__status {
   margin: 0;
+}
+
+.form__status:empty {
+  display: none;
+}
+
+/* Feedback box under the button */
+.form__status--success,
+.form__status--error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--bg-sunken);
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.form__status--success {
   color: var(--success);
+  border-left: 3px solid var(--success);
+}
+
+.form__status--error {
+  color: var(--danger);
+  border-left: 3px solid var(--danger);
 }
 
 .form button {

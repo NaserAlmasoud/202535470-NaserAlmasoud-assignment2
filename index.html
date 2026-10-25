@@ -191,7 +191,7 @@
     <!-- ========== Contact ========== -->
     <section id="contact" class="contact container">
       <h2 class="section-title">Contact</h2>
-      <p class="contact__intro">Have a question or an idea for a project? Send me a message.</p>
+      <p class="contact__intro">Have a question or an idea for a project? Send me a message. Your draft is saved in this browser as you type.</p>
 
       <!-- No backend: the form is validated and handled in js/script.js -->
       <form class="form" id="contactForm" novalidate>
@@ -208,13 +208,20 @@
         </div>
 
         <div class="form__field">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" rows="5" required></textarea>
+          <div class="form__label-row">
+            <label for="message">Message</label>
+            <span class="form__counter" id="messageCount" aria-live="polite">0 / 500</span>
+          </div>
+          <textarea id="message" name="message" rows="5" required aria-describedby="messageCount"></textarea>
           <p class="form__error" id="messageError" aria-live="polite"></p>
         </div>
 
+        <p class="form__draft" id="draftNote" hidden>
+          <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Your unsent draft was restored.
+        </p>
+
         <button class="btn btn--primary" type="submit">Send message</button>
-        <p class="form__status" id="formStatus" role="status"></p>
+        <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
       </form>
     </section>
   </main>

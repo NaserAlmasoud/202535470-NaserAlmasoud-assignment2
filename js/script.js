@@ -1,6 +1,7 @@
 /* =========================================================
    Portfolio interactivity
-   1. Greeting by time of day
+   0. Safe localStorage helper
+   1. Greeting by time of day (and the visitor's name, if saved)
    2. Mobile navigation menu
    3. Highlight the nav link of the section in view
    4. Projects: data, filter, search, sort
@@ -9,6 +10,35 @@
    7. Footer year
    ========================================================= */
 
+/* ---------- 0. Safe localStorage helper ---------- */
+/* localStorage can be unavailable (private mode, blocked site data) or
+   hold broken JSON, so every read and write goes through these two
+   functions, which never throw. The site works the same without storage. */
+const storage = {
+  get(key, fallback = null) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key));
+      return value ?? fallback;
+    } catch {
+      return fallback;
+    }
+  },
+  set(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      /* storage full or blocked: ignore */
+    }
+  },
+  remove(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      /* ignore */
+    }
+  },
+};
+
 /* ---------- 1. Greeting by time of day ---------- */
 function setGreeting() {
   const greetingEl = document.getElementById("greeting");
@@ -16,14 +46,16 @@ function setGreeting() {
   let greeting;
 
   if (hour < 12) {
-    greeting = "Good morning.";
+    greeting = "Good morning";
   } else if (hour < 18) {
-    greeting = "Good afternoon.";
+    greeting = "Good afternoon";
   } else {
-    greeting = "Good evening.";
+    greeting = "Good evening";
   }
 
-  greetingEl.textContent = greeting;
+  // After someone sends the contact form, greet them by name on later visits
+  const name = storage.get("visitor-name");
+  greetingEl.textContent = name ? `${greeting}, ${name}.` : `${greeting}.`;
 }
 
 /* ---------- 2. Mobile navigation ---------- */
@@ -218,8 +250,15 @@ function setupProjects() {
   const sort = document.getElementById("projectSort");
   const filterButtons = document.querySelectorAll(".filter-btn");
 
-  // Current view settings; render() turns these into cards
-  const state = { filter: "all", query: "", sort: "newest" };
+  // Current view settings; render() turns these into cards.
+  // The chosen filter and sort are remembered between visits.
+  // Saved values are only used if they are still valid options.
+  const saved = Object(storage.get("project-prefs", {}));
+  const state = {
+    filter: Object.hasOwn(CATEGORIES, saved.filter) ? saved.filter : "all",
+    query: "",
+    sort: Object.hasOwn(SORTERS, saved.sort) ? saved.sort : "newest",
+  };
 
   function matches(project) {
     const inCategory = state.filter === "all" || project.category === state.filter;
@@ -238,6 +277,7 @@ function setupProjects() {
 
     empty.hidden = visible.length > 0;
     count.textContent = `Showing ${visible.length} of ${PROJECTS.length} projects`;
+    storage.set("project-prefs", { filter: state.filter, sort: state.sort });
   }
 
   function setFilter(value) {
@@ -276,6 +316,9 @@ function setupProjects() {
     search.focus();
   });
 
+  // Apply the saved settings to the controls before the first render
+  setFilter(state.filter);
+  sort.value = state.sort;
   render();
 }
 
@@ -356,24 +399,6 @@ function countSolved(submissions) {
     if (sub.verdict === "OK") solved.add(`${sub.problem.contestId}-${sub.problem.index}`);
   });
   return solved.size;
-}
-
-/* Cache helpers. Storage can be unavailable (private mode, blocked
-   cookies), so every access is wrapped in try/catch. */
-function readCfCache() {
-  try {
-    return JSON.parse(localStorage.getItem(CF_CACHE_KEY));
-  } catch {
-    return null;
-  }
-}
-
-function writeCfCache(stats) {
-  try {
-    localStorage.setItem(CF_CACHE_KEY, JSON.stringify(stats));
-  } catch {
-    /* storage full or blocked: the page still works without the cache */
-  }
 }
 
 function minutesAgo(timestamp) {
@@ -507,7 +532,9 @@ function setupCodeforces() {
     busy = true;
     notice.hidden = true;
 
-    const cached = readCfCache();
+    // Ignore saved data that is missing parts (e.g. from an older version of the site)
+    let cached = storage.get(CF_CACHE_KEY);
+    if (!cached || !cached.info || !Array.isArray(cached.contests) || typeof cached.savedAt !== "number") cached = null;
     const isFresh = cached && Date.now() - cached.savedAt < CF_CACHE_MINUTES * 60000;
 
     // Recent saved stats: show them instantly without calling the API
@@ -535,7 +562,7 @@ function setupCodeforces() {
 
       const submissions = await cfRequest("user.status", { handle: CF_HANDLE });
       const stats = { info, contests, solved: countSolved(submissions), savedAt: Date.now() };
-      writeCfCache(stats);
+      storage.set(CF_CACHE_KEY, stats);
       renderAll(stats);
     } catch (error) {
       if (cached) {
@@ -570,47 +597,115 @@ function setupCodeforces() {
 }
 
 /* ---------- 6. Contact form validation ---------- */
+const MESSAGE_MAX = 500;
+const DRAFT_KEY = "contact-draft";
+
 function setupContactForm() {
   const form = document.getElementById("contactForm");
   const status = document.getElementById("formStatus");
+  const counter = document.getElementById("messageCount");
+  const draftNote = document.getElementById("draftNote");
+  const submitBtn = form.querySelector('button[type="submit"]');
   const fields = [...form.querySelectorAll("input, textarea")];
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // Each rule returns an error message, or an empty string when the value is valid
   const rules = {
     name: (value) => (value.length < 2 ? "Enter your name (at least 2 characters)." : ""),
-    email: (value) => (!emailPattern.test(value) ? "Enter a valid email, like name@example.com." : ""),
-    message: (value) => (value.length < 10 ? "Write a message of at least 10 characters." : ""),
+    email: (value) => {
+      if (!value) return "Enter your email so I can reply.";
+      return !emailPattern.test(value) ? "That email looks incomplete. Use a format like name@example.com." : "";
+    },
+    message: (value) => {
+      if (value.length < 10) return `Write a message of at least 10 characters (${10 - value.length} more to go).`;
+      if (value.length > MESSAGE_MAX) return `Keep the message under ${MESSAGE_MAX} characters.`;
+      return "";
+    },
   };
 
   function validateField(field) {
     const error = rules[field.name](field.value.trim());
     document.getElementById(`${field.name}Error`).textContent = error;
     field.classList.toggle("is-invalid", Boolean(error));
+    field.classList.toggle("is-valid", !error);
     field.setAttribute("aria-invalid", String(Boolean(error)));
     return !error;
   }
 
-  // Re-check a field when the user leaves it
+  function updateCounter() {
+    const length = form.elements.message.value.length;
+    counter.textContent = `${length} / ${MESSAGE_MAX}`;
+    counter.classList.toggle("is-near", length > MESSAGE_MAX * 0.9 && length <= MESSAGE_MAX);
+    counter.classList.toggle("is-over", length > MESSAGE_MAX);
+  }
+
+  function showStatus(message, type) {
+    status.textContent = message;
+    status.className = `form__status form__status--${type}`;
+    // Restart the slide-in animation even if the same type is shown twice
+    status.classList.remove("is-shown");
+    void status.offsetWidth;
+    status.classList.add("is-shown");
+  }
+
+  // Restore an unsent draft from a previous visit
+  const draft = storage.get(DRAFT_KEY);
+  if (draft) {
+    fields.forEach((field) => {
+      if (draft[field.name]) field.value = draft[field.name];
+    });
+    draftNote.hidden = false;
+  }
+  updateCounter();
+
   fields.forEach((field) => {
-    field.addEventListener("blur", () => validateField(field));
+    // Check a field when the user leaves it
+    field.addEventListener("blur", () => {
+      if (field.value.trim()) validateField(field);
+    });
+
+    field.addEventListener("input", () => {
+      // Once a field has shown an error, re-check it while typing so the error clears right away
+      if (field.classList.contains("is-invalid")) validateField(field);
+      if (field.name === "message") updateCounter();
+
+      // Save the draft as the user types
+      storage.set(DRAFT_KEY, Object.fromEntries(fields.map((f) => [f.name, f.value])));
+    });
   });
 
   form.addEventListener("submit", (event) => {
     event.preventDefault(); // no backend: stay on the page
-    status.textContent = "";
 
     const allValid = fields.map(validateField).every(Boolean);
 
     if (!allValid) {
+      const count = fields.filter((field) => field.classList.contains("is-invalid")).length;
+      showStatus(`Please fix the ${count === 1 ? "highlighted field" : `${count} highlighted fields`} and try again.`, "error");
       // Move focus to the first field that needs fixing
       fields.find((field) => field.classList.contains("is-invalid")).focus();
       return;
     }
 
-    const name = form.elements.name.value.trim();
-    status.textContent = `Thanks, ${name}. This demo form has no backend yet, so nothing was sent — please email me directly for now.`;
-    form.reset();
+    // Short "Sending…" state so the user sees the click was received
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending…";
+
+    setTimeout(() => {
+      const name = form.elements.name.value.trim();
+      showStatus(`Thanks, ${name}! Your message is ready. This demo form has no backend yet, so nothing was sent. Please email me directly at me@naser.md for now.`, "success");
+
+      storage.set("visitor-name", name.split(" ")[0]);
+      storage.remove(DRAFT_KEY);
+      draftNote.hidden = true;
+      form.reset();
+      fields.forEach((field) => field.classList.remove("is-valid"));
+      updateCounter();
+      setGreeting();
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send message";
+    }, 600);
   });
 }
 
