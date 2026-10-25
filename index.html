@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Personal portfolio of Your Name, computer science student.">
+  <title>Your Name | Portfolio</title>
+
+  <!-- Personal Site Theme (colours, self-hosted Manrope + Source Serif 4 fonts), then the portfolio's own layout -->
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- Apply the saved theme before the page paints to avoid a flash of the wrong theme -->
+  <!--script>
+    try {
+      const saved = localStorage.getItem("theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+      else if (window.matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark";
+    } catch (e) { /* storage unavailable: keep default theme */ }
+  </script-->
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ========== Header & navigation ========== -->
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main navigation">
+      <a class="nav__logo" href="#about">YN</a>
+
+      <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+        <span class="visually-hidden">Open menu</span>
+        <span class="nav__bar"></span>
+        <span class="nav__bar"></span>
+      </button>
+
+      <ul class="nav__menu" id="navMenu">
+        <li><a class="nav__link" href="#about">About</a></li>
+        <li><a class="nav__link" href="#skills">Skills</a></li>
+        <li><a class="nav__link" href="#projects">Projects</a></li>
+        <li><a class="nav__link" href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- ========== About Me ========== -->
+    <section id="about" class="about container">
+      <div class="about__text">
+        <p class="about__greeting"><span class="about__greeting-text" id="greeting">Hello.</span></p>
+        <h1 class="about__name">I'm Naser Almasoud.</h1>
+        <p class="about__tagline">A computer science student intrested in problem solving, algorithms and AI.</p>
+        <p class="about__intro">
+          I am a previous Saudi informatics team member. I am currently a sophomore at KFUPM studying computer science.
+          I am intrested in AI solutions and competitive programming, and I am trying to deepen my knowledge of the two feilds.
+        </p>
+        <div class="about__actions">
+          <a class="btn btn--primary" href="#projects">See my projects</a>
+          <a class="btn btn--ghost" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <div class = "profile">
+        <img class="about__photo" src="assets/images/profile-1.svg" alt="Profile picture placeholder" width="280" height="280">
+        <div class="social-links">
+          <a href="https://x.com/Naser_Almasoud" target="_blank" rel="noopener" aria-label="Twitter"><i class = "fa-brands fa-x-twitter"></i></a>
+          <a href="https://www.linkedin.com/in/naser-almasoud-5b030832a/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class = "fa-brands fa-linkedin"></i></a>
+          <a href="mailto:me@naser.md" aria-label="Email"><i class = "fa-solid fa-envelope"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Skills (optional extra section) ========== -->
+    <section id="skills" class="skills container">
+      <h2 class="section-title">Skills</h2>
+      <ul class="skills__list">
+        <li>Problem Solving</li>
+        <li>C++</li>
+        <li>Python</li>
+        <li>Machine Learning</li>
+        <li>Web devolopment</li>
+        <li>Data Analysis</li>
+      </ul>
+    </section>
+
+    <!-- ========== Projects ========== -->
+    <section id="projects" class="projects container">
+      <h2 class="section-title">Projects</h2>
+      <div class="projects__grid">
+        <article class="project">
+          <img class="project__image" src="assets/images/project-1.svg" alt="Screenshot placeholder for the Study Planner project" width="600" height="375" loading="lazy">
+          <div class="project__body">
+            <h3 class="project__title">Spam Email Detector</h3>
+            <p class="project__desc">An AI mdel that can detect spam email so you can ignore them. The model is an LLM that studeis a large number of emails then it can classify an email if it is normal or spam.</p>
+            <p class="project__tech">Pysthon, LLM</p>
+          </div>
+        </article>
+
+        <article class="project">
+          <img class="project__image" src="assets/images/project-2.svg" alt="Screenshot placeholder for the Deal Finder project" width="600" height="375" loading="lazy">
+          <div class="project__body">
+            <h3 class="project__title">Deal Finder</h3>
+            <p class="project__desc">A centralized web-based store discovery platform designed to streamline how online shoppers find, evaluate, and access reliable e-commerce retailers..</p>
+            <p class="project__tech">JavaScript, CSS, HTML, Python</p>
+          </div>
+        </article>
+
+        <article class="project">
+          <img class="project__image" src="assets/images/project-3.svg" alt="Screenshot placeholder for the Grade Calculator project" width="600" height="375" loading="lazy">
+          <div class="project__body">
+            <h3 class="project__title">Place Holder</h3>
+            <p class="project__desc">This section is a place holder for upcomming projects.</p>
+            <p class="project__tech">text</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== Contact ========== -->
+    <section id="contact" class="contact container">
+      <h2 class="section-title">Contact</h2>
+      <p class="contact__intro">Have a question or an idea for a project? Send me a message.</p>
+
+      <!-- No backend: the form is validated and handled in js/script.js -->
+      <form class="form" id="contactForm" novalidate>
+        <div class="form__field">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" autocomplete="name" required>
+          <p class="form__error" id="nameError" aria-live="polite"></p>
+        </div>
+
+        <div class="form__field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+          <p class="form__error" id="emailError" aria-live="polite"></p>
+        </div>
+
+        <div class="form__field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
+          <p class="form__error" id="messageError" aria-live="polite"></p>
+        </div>
+
+        <button class="btn btn--primary" type="submit">Send message</button>
+        <p class="form__status" id="formStatus" role="status"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year">2026</span> Naser Almasoud</p>
+      <a href="#about" class="site-footer__top">Back to top</a>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
