@@ -1,11 +1,10 @@
 /* =========================================================
    Portfolio interactivity
    1. Greeting by time of day
-   2. Dark / light theme toggle (saved in localStorage)
-   3. Mobile navigation menu
-   4. Highlight the nav link of the section in view
-   5. Contact form validation (no backend)
-   6. Footer year
+   2. Mobile navigation menu
+   3. Highlight the nav link of the section in view
+   4. Contact form validation (no backend)
+   5. Footer year
    ========================================================= */
 
 /* ---------- 1. Greeting by time of day ---------- */
@@ -25,9 +24,7 @@ function setGreeting() {
   greetingEl.textContent = greeting;
 }
 
-/* ---------- 2. Theme toggle ---------- */
-
-/* ---------- 3. Mobile navigation ---------- */
+/* ---------- 2. Mobile navigation ---------- */
 function setupMobileNav() {
   const toggle = document.getElementById("navToggle");
   const menu = document.getElementById("navMenu");
@@ -53,7 +50,7 @@ function setupMobileNav() {
   });
 }
 
-/* ---------- 4. Active nav link while scrolling ---------- */
+/* ---------- 3. Active nav link while scrolling ---------- */
 function setupActiveLinks() {
   const links = document.querySelectorAll(".nav__link");
   const sections = document.querySelectorAll("main section");
@@ -76,7 +73,7 @@ function setupActiveLinks() {
   sections.forEach((section) => observer.observe(section));
 }
 
-/* ---------- 5. Contact form validation ---------- */
+/* ---------- 4. Contact form validation ---------- */
 function setupContactForm() {
   const form = document.getElementById("contactForm");
   const status = document.getElementById("formStatus");
@@ -121,7 +118,7 @@ function setupContactForm() {
   });
 }
 
-/* ---------- 6. Footer year ---------- */
+/* ---------- 5. Footer year ---------- */
 function setYear() {
   document.getElementById("year").textContent = new Date().getFullYear();
 }

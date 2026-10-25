@@ -1,4 +1,4 @@
-/* Personal Site Theme — generated from tokens.json. Light is default; add data-theme="dark" to <html> for dark. */
+/* Personal Site Theme — generated from tokens.json. This portfolio uses the dark palette only. */
 
 @font-face{font-family:"Manrope";src:url("fonts/Manrope-Medium.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
 @font-face{font-family:"Manrope";src:url("fonts/Manrope-Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
@@ -15,46 +15,6 @@
 @font-face{font-family:"Thmanyah Serif Display";src:url("fonts/ThmanyahSerifDisplay-Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
 
 :root{
-  --bg:#eff0fa;
-  --bg-raised:#ffffff;
-  --bg-sunken:#e3e5f3;
-  --bg-selection:#d6d8f4;
-  --ink:#1a1b45;
-  --ink-muted:#4a4d80;
-  --ink-faint:#62659b;
-  --accent:#4345c2;
-  --accent-hover:#3335a8;
-  --on-accent:#ffffff;
-  --accent-soft:#dcdcf7;
-  --border-hairline:#c5c8e4;
-  --border-strong:#8588b8;
-  --success:#1b6b45;
-  --warning:#8c5212;
-  --danger:#b02a37;
-  --shadow-float:0 8px 24px rgba(36, 37, 92, 0.14);
-  color-scheme:light;
-}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#24255c;
-  --bg-raised:#2d2e6b;
-  --bg-sunken:#1c1d4a;
-  --bg-selection:#3b3d8e;
-  --ink:#eff0fa;
-  --ink-muted:#b9bbe0;
-  --ink-faint:#8f92c6;
-  --accent:#a7a9f0;
-  --accent-hover:#c4c5f7;
-  --on-accent:#1a1b45;
-  --accent-soft:#34368a;
-  --border-hairline:#45478c;
-  --border-strong:#6f72b4;
-  --success:#7ed9a6;
-  --warning:#f0b86b;
-  --danger:#f58c96;
-  --shadow-float:0 8px 24px rgba(0, 0, 0, 0.45);
-  color-scheme:dark;
-}}
-:root[data-theme="dark"]{
   --bg:#24255c;
   --bg-raised:#2d2e6b;
   --bg-sunken:#1c1d4a;
@@ -182,7 +142,7 @@ a.card:hover h3{color:var(--accent)}
 .card p{font-size:15px;line-height:24px;color:var(--ink-muted);margin-bottom:var(--space-4)}
 :lang(ar) .card p{font-size:16px;line-height:28px}
 .card img{border-radius:var(--radius-md);margin-bottom:var(--space-4)}
-:root[data-theme="dark"] .card img{border:1px solid var(--border-hairline)}
+.card img{border:1px solid var(--border-hairline)}
 .grid{display:grid;gap:var(--space-8);grid-template-columns:1fr}
 @media (min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
 @media (min-width:1024px){.grid-3{grid-template-columns:repeat(3,1fr)}}

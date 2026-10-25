@@ -1,7 +1,7 @@
 /* =========================================================
    Portfolio styles
    Built on css/theme.css (Personal Site Theme), which provides the
-   colour variables, fonts, base element styles and dark mode.
+   colour variables (dark palette), fonts and base element styles.
    This file only lays out the portfolio's own sections.
 
    1. Base tweaks
@@ -20,7 +20,6 @@ html {
 
 body {
   background: var(--bg);
-  transition: background-color 0.3s, color 0.3s;
 }
 
 img {
@@ -98,7 +97,6 @@ section {
   z-index: 50;
   background: var(--bg);
   border-bottom: 1px solid var(--border-hairline);
-  transition: background-color 0.3s;
 }
 
 .nav {
@@ -223,8 +221,8 @@ section {
   object-fit: cover;
 }
 
-/* The portrait is black line art, so keep a light backing in dark mode */
-:root[data-theme="dark"] .about__photo {
+/* The portrait is black line art, so it needs a light backing on the dark page */
+.about__photo {
   background: var(--ink);
 }
 
