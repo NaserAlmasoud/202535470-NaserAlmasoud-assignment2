@@ -150,7 +150,7 @@ function setupProjects() {
 }
 
 /* ---------- 5. Codeforces stats from the public API ---------- */
-const CF_URL = "https://codeforces.com/api/user.info?handles=Nasertmp";
+const CF_URL = "https://codeforces.com/api/user.info?handles=Naser_md";
 
 async function loadCodeforces() {
   const loading = document.getElementById("cfLoading");
