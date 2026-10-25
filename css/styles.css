@@ -9,7 +9,8 @@
    3. Header & navigation
    4. Sections: About, Skills, Projects, Codeforces, Contact
    5. Footer
-   6. Responsive breakpoints
+   6. Animations
+   7. Responsive breakpoints
    ========================================================= */
 
 /* ---------- 1. Base tweaks ---------- */
@@ -638,7 +639,59 @@ section {
   color: var(--ink-muted);
 }
 
-/* ---------- 6. Responsive breakpoints ---------- */
+/* ---------- 6. Animations ---------- */
+
+/* One shared entrance: fade in while moving up a little */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* About text fades in when the page opens */
+.about__text {
+  animation: fadeUp 0.6s ease-out backwards;
+}
+
+/* Project cards fade in each time the filter rebuilds them */
+.project {
+  animation: fadeUp 0.4s ease-out backwards;
+}
+
+/* Hover: the card lifts slightly */
+.project:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-float);
+}
+
+/* Feedback messages slide in when they appear */
+.form__status--success,
+.form__status--error,
+.cf__error,
+#cfContent {
+  animation: fadeUp 0.3s ease-out backwards;
+}
+
+/* Sections below the first fade in as they scroll into view.
+   They are only hidden when JavaScript is running (the .js class),
+   so the content is never lost if the script fails. */
+.js main section:not(:first-child) {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.js main section.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 7. Responsive breakpoints ---------- */
 
 /* Tablet */
 @media (max-width: 900px) {
@@ -726,5 +779,12 @@ section {
   *::before,
   *::after {
     transition: none !important;
+    animation: none !important;
+  }
+
+  /* Show scroll-in sections straight away */
+  .js main section:not(:first-child) {
+    opacity: 1;
+    transform: none;
   }
 }

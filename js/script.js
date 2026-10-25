@@ -4,6 +4,7 @@
    2. Projects: filter by category        (dynamic content)
    3. Codeforces stats from the public API (data handling + feedback)
    4. Contact form validation             (user feedback)
+   5. Fade sections in while scrolling    (animation)
    ========================================================= */
 
 /* ---------- 1. Mobile navigation ---------- */
@@ -169,11 +170,31 @@ function setupContactForm() {
   });
 }
 
+/* ---------- 5. Fade sections in while scrolling ---------- */
+function setupReveal() {
+  document.documentElement.classList.add("js"); // lets the CSS hide sections until they appear
+
+  // IntersectionObserver tells us when a section enters the screen (cheaper than a scroll listener)
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target); // animate each section only once
+      });
+    },
+    { threshold: 0.1 } // start when 10% of the section is visible
+  );
+
+  document.querySelectorAll("main section").forEach((section) => observer.observe(section));
+}
+
 /* Run everything once the HTML is ready */
 document.addEventListener("DOMContentLoaded", () => {
   setupMobileNav();
   setupProjects();
   setupContactForm();
+  setupReveal();
   loadCodeforces();
   document.getElementById("cfRetry").addEventListener("click", loadCodeforces);
 });
