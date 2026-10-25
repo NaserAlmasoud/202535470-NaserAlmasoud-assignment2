@@ -78,33 +78,47 @@
     <!-- ========== Projects ========== -->
     <section id="projects" class="projects container">
       <h2 class="section-title">Projects</h2>
-      <div class="projects__grid">
-        <article class="project">
-          <img class="project__image" src="assets/images/project-1.svg" alt="Cover image for the Spam Email Detector project" width="600" height="375" loading="lazy">
-          <div class="project__body">
-            <h3 class="project__title">Spam Email Detector</h3>
-            <p class="project__desc">An AI model that can detect spam email so you can ignore them. The model is an LLM that studies a large number of emails then it can classify an email if it is normal or spam.</p>
-            <p class="project__tech">Python, LLM</p>
-          </div>
-        </article>
+      <p class="section-intro">Filter by area, search by name or technology, or change the order.</p>
 
-        <article class="project">
-          <img class="project__image" src="assets/images/project-2.svg" alt="Cover image for the Deal Finder project" width="600" height="375" loading="lazy">
-          <div class="project__body">
-            <h3 class="project__title">Deal Finder</h3>
-            <p class="project__desc">A centralized web-based store discovery platform designed to streamline how online shoppers find, evaluate, and access reliable e-commerce retailers.</p>
-            <p class="project__tech">JavaScript, CSS, HTML, Python</p>
-          </div>
-        </article>
+      <!-- Controls: the cards below are built by js/script.js from the PROJECTS array -->
+      <div class="projects__controls">
+        <div class="filters" role="group" aria-label="Filter projects by area">
+          <button class="filter-btn is-active" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-btn" type="button" data-filter="ai" aria-pressed="false">AI</button>
+          <button class="filter-btn" type="button" data-filter="data" aria-pressed="false">Data Science</button>
+          <button class="filter-btn" type="button" data-filter="web" aria-pressed="false">Web Dev</button>
+        </div>
 
-        <article class="project">
-          <img class="project__image" src="assets/images/project-3.svg" alt="Screenshot placeholder for the Grade Calculator project" width="600" height="375" loading="lazy">
-          <div class="project__body">
-            <h3 class="project__title">Place Holder</h3>
-            <p class="project__desc">This section is a place holder for upcomming projects.</p>
-            <p class="project__tech">text</p>
+        <div class="projects__tools">
+          <div class="search">
+            <label class="visually-hidden" for="projectSearch">Search projects</label>
+            <i class="fa-solid fa-magnifying-glass search__icon" aria-hidden="true"></i>
+            <input type="search" id="projectSearch" placeholder="Search projects or tech…" autocomplete="off">
           </div>
-        </article>
+
+          <div class="sort">
+            <label for="projectSort">Sort</label>
+            <select id="projectSort">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="az">Name (A–Z)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <p class="projects__count" id="projectCount" aria-live="polite"></p>
+
+      <div class="projects__grid" id="projectGrid">
+        <!-- Fallback if JavaScript is turned off -->
+        <noscript><p>Turn on JavaScript to see the project list.</p></noscript>
+      </div>
+
+      <div class="empty-state" id="projectEmpty" hidden>
+        <i class="fa-regular fa-folder-open empty-state__icon" aria-hidden="true"></i>
+        <p class="empty-state__title">No projects found</p>
+        <p class="empty-state__text">Nothing matches your search. Try another word or show every project.</p>
+        <button class="btn btn--ghost" type="button" id="clearFilters">Clear filters</button>
       </div>
     </section>
 
