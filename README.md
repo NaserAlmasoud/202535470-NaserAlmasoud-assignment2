@@ -1,30 +1,30 @@
 # Personal Portfolio – Assignment 2
 
-A simple, responsive personal portfolio built with plain HTML, CSS, and JavaScript. It introduces me, shows a few of my projects, and includes a contact form. This is the foundation for the professional portfolio I will expand in later assignments.
+My personal portfolio website, built with plain HTML, CSS and JavaScript. Assignment 2 builds on [Assignment 1](https://github.com/NaserAlmasoud/202535470-NaserAlmasoud-assignment1) and makes the site interactive: projects can be filtered by area, my Codeforces stats load live from a public API, the contact form gives clear feedback, and sections animate into view.
 
-**Live demo:** https://NaserAlmasoud.github.io/202535470-NaserAlmasoud-assignment1/
+**Live demo:** https://naseralmasoud.github.io/202535470-NaserAlmasoud-assignment2/ *(after GitHub Pages is enabled, see [Deployment](#deployment-github-pages))*
 
-## Features
+## What's new in Assignment 2
 
-| Feature | Description |
-|---|---|
-| About Me | Intro, tagline, and profile image |
-| Skills | The tools and languages I work with |
-| Projects | Three projects with image, description, and technologies used |
-| Contact form | Name, email, and message with live validation (no backend) |
-| Time-of-day greeting | Headline changes to "Good morning / afternoon / evening" |
-| Dark / light theme | Toggle in the navigation bar; the choice is remembered |
-| Smooth scrolling | Navigation links glide to each section |
-| Active section highlight | The nav link of the section on screen gets a highlighted pill |
-| Responsive layout | Works on desktop, tablet, and mobile (hamburger menu on small screens) |
-| Accessibility | Skip link, keyboard focus styles, ARIA labels, reduced-motion support |
+| Requirement | Feature | Where |
+|---|---|---|
+| Dynamic content | **Project filter**: All / AI / Data Science / Web Dev buttons show only matching projects. Cards are built from a data array. | `#projects`, `setupProjects()` |
+| Data handling | **Live Codeforces stats** (rating, max rating, rank, max rank) fetched from the Codeforces API | `#codeforces`, `loadCodeforces()` |
+| Data handling | **Contact form validation** with a confirmation message | `#contact`, `setupContactForm()` |
+| Animation | Sections fade in on scroll, cards fade in on filter and lift on hover, messages slide in | `styles.css` §6, `setupReveal()` |
+| Error handling & feedback | "Loading…" spinner, friendly API error with **Try again**, inline form errors | Codeforces panel, contact form |
+
+Kept from Assignment 1: About and Skills sections, responsive layout with a mobile menu, dark theme, accessibility features (skip link, focus styles, ARIA labels, reduced-motion support).
+
+> Five of the seven projects are marked **Sample**. They are example entries used to test the filter and will be replaced with real projects.
 
 ## Tech stack
 
 - HTML5 (semantic elements)
-- CSS3 (custom properties, Flexbox, Grid, media queries)
-- Vanilla JavaScript (ES6+) – no frameworks or build tools
-- [Personal Site Theme](css/theme.css): indigo palette with light/dark modes, self-hosted Manrope (headings) and Source Serif 4 (body) fonts
+- CSS3 (custom properties, Grid, Flexbox, keyframe animations, media queries)
+- Vanilla JavaScript (ES6+): `fetch`, `async/await`, `IntersectionObserver`. No frameworks, libraries or build step.
+- [Codeforces API](https://codeforces.com/apiHelp) (public, no key needed)
+- Font Awesome 6 icons (CDN) and self-hosted Manrope / Source Serif 4 fonts
 
 ## Project structure
 
@@ -33,48 +33,50 @@ A simple, responsive personal portfolio built with plain HTML, CSS, and JavaScri
 ├── README.md
 ├── index.html                  # Page markup
 ├── css/
-│   ├── theme.css               # Personal Site Theme: colours, fonts, base styles
-│   ├── styles.css              # Portfolio layout, components and breakpoints
+│   ├── theme.css               # Colours (dark palette), fonts, base element styles
+│   ├── styles.css              # Layout, components, animations, breakpoints
 │   └── fonts/                  # Manrope + Source Serif 4 (WOFF2)
 ├── js/
-│   └── script.js               # Greeting, theme toggle, menu, form validation
+│   └── script.js               # Menu, project filter, Codeforces API, form, scroll animation
 ├── assets/
-│   └── images/                 # Profile and project placeholder images (SVG)
+│   └── images/                 # Profile illustration
 ├── docs/
-│   ├── ai-usage-report.md      # How AI tools were used
+│   ├── ai-usage-report.md      # How AI tools were used (with declaration)
 │   └── technical-documentation.md
 └── .gitignore
 ```
 
 ## Run locally
 
-No installation or build step is needed.
+No installation or build step is needed. You only need a web browser and an internet connection (for the Codeforces stats and icons).
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR-GITHUB-USERNAME/ID-FirstLast-assignment1.git
-   cd ID-FirstLast-assignment1
+   git clone https://github.com/NaserAlmasoud/202535470-NaserAlmasoud-assignment2.git
+   cd 202535470-NaserAlmasoud-assignment2
    ```
 2. Open the site using **one** of these options:
    - **Simplest:** double-click `index.html` to open it in your browser.
-   - **VS Code:** install the *Live Server* extension, right-click `index.html`, and choose **Open with Live Server** (auto-reloads on save).
+   - **VS Code:** install the *Live Server* extension, right-click `index.html`, and choose **Open with Live Server** (reloads on save).
    - **Python:** run `python -m http.server 8000` in the project folder and visit http://localhost:8000.
+3. After pulling new changes, hard-refresh with **Ctrl+Shift+R** (Windows/Linux) or **Cmd+Shift+R** (Mac), so the browser doesn't use old cached CSS/JS.
 
 ## Using the site
 
-- Click the links in the top bar (or the ☰ menu on mobile) to jump to a section.
-- Click the round button at the end of the menu to switch between light and dark themes.
-- Fill in the contact form and press **Send message**. Invalid fields show a message explaining how to fix them. Because there is no backend, nothing is actually emailed.
+- **Navigate:** click the links in the top bar (or the ☰ button on mobile) to jump to a section.
+- **Filter projects:** click **AI**, **Data Science** or **Web Dev** to show only those projects; click **All** to show every project.
+- **Codeforces stats:** load automatically. While loading you see a spinner. If Codeforces can't be reached, a message explains it; press **Try again** or open the profile directly.
+- **Contact form:** fill in your name, email and a message, then press **Send message**. Invalid fields are outlined in red with a message explaining how to fix them. The form has no backend, so nothing is actually emailed; the confirmation tells you to email me directly.
 
 ## Deployment (GitHub Pages)
 
 1. In the repository, go to **Settings → Pages**.
 2. Under **Source**, choose **Deploy from a branch**, select `main` and `/ (root)`, then **Save**.
-3. After about a minute the site is live at `https://YOUR-GITHUB-USERNAME.github.io/REPO-NAME/`. Paste that link at the top of this README.
+3. After about a minute the site is live at https://naseralmasoud.github.io/202535470-NaserAlmasoud-assignment2/.
 
 ## AI use summary
 
-I used Claude to generate the initial project scaffold, suggest a color palette and layout, and draft the documentation structure. I then reviewed every file, rewrote the content to describe my own background and projects, and tested the site in several browsers and screen sizes. Full details are in [docs/ai-usage-report.md](docs/ai-usage-report.md).
+I used **Claude Code** to analyze the assignment rubric, plan the work step by step, and write a first version of each feature, which I then reviewed and changed. I asked it to explain every piece of code it wrote, removed features the assignment did not need (the script went from about 700 lines to 200), and made my own changes, such as the Codeforces handle and the README. Every AI-assisted commit is marked `Assisted-by: Claude (Claude Code)`. Full details, the usage log and my declaration are in [docs/ai-usage-report.md](docs/ai-usage-report.md).
 
 ## Documentation
 
@@ -83,4 +85,4 @@ I used Claude to generate the initial project scaffold, suggest a color palette 
 
 ## Author
 
-**Naser Almasoud** – Student ID: `202535470`
+**Naser Almasoud**, Student ID `202535470`
