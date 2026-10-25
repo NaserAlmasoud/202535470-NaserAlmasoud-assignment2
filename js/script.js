@@ -4,8 +4,9 @@
    2. Mobile navigation menu
    3. Highlight the nav link of the section in view
    4. Projects: data, filter, search, sort
-   5. Contact form validation (no backend)
-   6. Footer year
+   5. Codeforces stats from the public API
+   6. Contact form validation (no backend)
+   7. Footer year
    ========================================================= */
 
 /* ---------- 1. Greeting by time of day ---------- */
@@ -278,7 +279,297 @@ function setupProjects() {
   render();
 }
 
-/* ---------- 5. Contact form validation ---------- */
+/* ---------- 5. Codeforces stats from the public API ---------- */
+const CF_HANDLE = "Nasertmp";
+const CF_API = "https://codeforces.com/api/";
+const CF_CACHE_KEY = "cf-stats";
+const CF_CACHE_MINUTES = 30;
+const CF_TIMEOUT_MS = 10000;
+const CF_CALL_GAP_MS = 2100; // Codeforces allows about one API call every 2 seconds
+
+// Codeforces rank colours, lightened so they are readable on the dark page
+const CF_RANK_COLORS = {
+  newbie: "#b4b4c8",
+  pupil: "#6fdc8c",
+  specialist: "#4fd1c5",
+  expert: "#8fa8ff",
+  "candidate master": "#e07be0",
+  master: "#ffb066",
+  "international master": "#ffb066",
+  grandmaster: "#ff7a7a",
+  "international grandmaster": "#ff7a7a",
+  "legendary grandmaster": "#ff7a7a",
+};
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+let cfLastCall = 0;
+
+/* One Codeforces API call. Waits if the previous call was too recent,
+   gives up after CF_TIMEOUT_MS, and throws a readable error on failure. */
+async function cfRequest(method, params, isRetry = false) {
+  const wait = cfLastCall + CF_CALL_GAP_MS - Date.now();
+  if (wait > 0) await delay(wait);
+  cfLastCall = Date.now();
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), CF_TIMEOUT_MS);
+  const url = `${CF_API}${method}?${new URLSearchParams(params)}`;
+
+  let response;
+  try {
+    response = await fetch(url, { signal: controller.signal });
+  } catch (error) {
+    throw new Error(error.name === "AbortError" ? "timeout" : "network");
+  } finally {
+    clearTimeout(timer);
+  }
+
+  // Codeforces answers errors with JSON too, e.g. {status: "FAILED", comment: "..."}
+  const data = await response.json().catch(() => null);
+  if (data && data.status === "OK") return data.result;
+
+  const comment = (data && data.comment) || `HTTP ${response.status}`;
+  if (/call limit/i.test(comment) && !isRetry) {
+    await delay(CF_CALL_GAP_MS);
+    return cfRequest(method, params, true);
+  }
+  throw new Error(/not found/i.test(comment) ? "not-found" : "api");
+}
+
+// Turn an internal error code into a message that says what to do next
+function cfErrorMessage(error) {
+  if (!navigator.onLine) return "You seem to be offline. Check your internet connection, then press Try again.";
+  switch (error.message) {
+    case "timeout":
+      return "Codeforces is taking too long to respond. It may be busy, so please try again in a moment.";
+    case "not-found":
+      return `The Codeforces handle "${CF_HANDLE}" was not found.`;
+    default:
+      return "Codeforces could not be reached right now. Please try again in a moment, or open the profile directly.";
+  }
+}
+
+// Count distinct problems with at least one accepted submission
+function countSolved(submissions) {
+  const solved = new Set();
+  submissions.forEach((sub) => {
+    if (sub.verdict === "OK") solved.add(`${sub.problem.contestId}-${sub.problem.index}`);
+  });
+  return solved.size;
+}
+
+/* Cache helpers. Storage can be unavailable (private mode, blocked
+   cookies), so every access is wrapped in try/catch. */
+function readCfCache() {
+  try {
+    return JSON.parse(localStorage.getItem(CF_CACHE_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function writeCfCache(stats) {
+  try {
+    localStorage.setItem(CF_CACHE_KEY, JSON.stringify(stats));
+  } catch {
+    /* storage full or blocked: the page still works without the cache */
+  }
+}
+
+function minutesAgo(timestamp) {
+  const minutes = Math.round((Date.now() - timestamp) / 60000);
+  if (minutes < 1) return "just now";
+  if (minutes === 1) return "1 minute ago";
+  if (minutes < 60) return `${minutes} minutes ago`;
+  const hours = Math.round(minutes / 60);
+  return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+}
+
+// Draw the rating history as a small SVG line chart
+function drawRatingChart(container, contests) {
+  if (contests.length === 0) {
+    container.innerHTML = '<p class="cf__placeholder">No rated contests yet. The chart appears after the first rated contest.</p>';
+    return;
+  }
+
+  const width = 600;
+  const height = 180;
+  const pad = 12;
+  // Number() makes sure only numbers end up in the SVG markup
+  const ratings = contests.map((c) => Number(c.newRating));
+  const min = Math.min(...ratings);
+  const max = Math.max(...ratings);
+  const range = Math.max(max - min, 50); // avoid a flat line when ratings barely change
+
+  const x = (i) => (ratings.length === 1 ? width / 2 : pad + (i * (width - 2 * pad)) / (ratings.length - 1));
+  const y = (rating) => height - pad - ((rating - min) / range) * (height - 2 * pad);
+
+  const points = ratings.map((r, i) => `${x(i).toFixed(1)},${y(r).toFixed(1)}`).join(" ");
+  const dots = ratings
+    .map((r, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(r).toFixed(1)}" r="4"><title>${r}</title></circle>`)
+    .join("");
+
+  const first = ratings[0];
+  const last = ratings[ratings.length - 1];
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Rating went from ${first} to ${last} over ${ratings.length} rated contests, peaking at ${max}.">
+      <line class="cf__grid" x1="0" x2="${width}" y1="${y(max)}" y2="${y(max)}" />
+      <line class="cf__grid" x1="0" x2="${width}" y1="${y(min)}" y2="${y(min)}" />
+      <polyline class="cf__line" points="${points}" />
+      <g class="cf__dots">${dots}</g>
+    </svg>
+    <p class="cf__chart-caption" aria-hidden="true">
+      <span>Peak <strong>${max}</strong></span>
+      <span>Lowest <strong>${min}</strong></span>
+      <span>First → latest <strong>${first} → ${last}</strong></span>
+    </p>`;
+}
+
+function setupCodeforces() {
+  const panel = document.getElementById("cfPanel");
+  const loading = document.getElementById("cfLoading");
+  const loadingText = document.getElementById("cfLoadingText");
+  const errorBox = document.getElementById("cfError");
+  const errorText = document.getElementById("cfErrorText");
+  const content = document.getElementById("cfContent");
+  const notice = document.getElementById("cfNotice");
+  const el = (id) => document.getElementById(id);
+
+  let busy = false;
+
+  // Show exactly one of: loading, error, content
+  function show(view) {
+    loading.hidden = view !== "loading";
+    errorBox.hidden = view !== "error";
+    content.hidden = view !== "content";
+    panel.setAttribute("aria-busy", String(view === "loading"));
+  }
+
+  function renderProfile(info) {
+    const rank = info.rank || "unrated";
+    el("cfHandle").textContent = info.handle;
+    el("cfRank").textContent = rank;
+    el("cfRank").style.color = CF_RANK_COLORS[rank] || "var(--ink-muted)";
+    el("cfRating").textContent = info.rating ?? "Unrated";
+    el("cfMaxRating").textContent = info.maxRating ?? "–";
+
+    const avatar = el("cfAvatar");
+    if (info.titlePhoto) {
+      avatar.src = info.titlePhoto.startsWith("//") ? `https:${info.titlePhoto}` : info.titlePhoto;
+      avatar.alt = `${info.handle}'s Codeforces avatar`;
+      avatar.hidden = false;
+      avatar.onerror = () => (avatar.hidden = true);
+    }
+  }
+
+  function renderContests(contests) {
+    el("cfContestCount").textContent = contests.length;
+    drawRatingChart(el("cfChart"), contests);
+
+    const list = el("cfContests");
+    list.replaceChildren();
+    if (contests.length === 0) {
+      list.innerHTML = '<li class="cf__placeholder">No rated contests yet.</li>';
+      return;
+    }
+
+    // Newest five contests first
+    contests.slice(-5).reverse().forEach((c) => {
+      const change = c.newRating - c.oldRating;
+      const li = document.createElement("li");
+      li.className = "cf__contest";
+      li.innerHTML = `
+        <a class="cf__contest-name" target="_blank" rel="noopener"></a>
+        <span class="cf__contest-date"></span>
+        <span class="cf__contest-rank"></span>
+        <span class="cf__contest-change"></span>`;
+      const link = li.querySelector("a");
+      link.href = `https://codeforces.com/contest/${c.contestId}`;
+      link.textContent = c.contestName;
+      li.querySelector(".cf__contest-date").textContent = new Date(c.ratingUpdateTimeSeconds * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      li.querySelector(".cf__contest-rank").textContent = `Rank ${c.rank}`;
+      const changeEl = li.querySelector(".cf__contest-change");
+      changeEl.textContent = change > 0 ? `+${change}` : String(change);
+      changeEl.classList.add(change >= 0 ? "is-up" : "is-down");
+      list.append(li);
+    });
+  }
+
+  function renderAll(stats) {
+    renderProfile(stats.info);
+    renderContests(stats.contests);
+    el("cfSolved").textContent = stats.solved;
+    el("cfUpdated").textContent = `Updated ${minutesAgo(stats.savedAt)}`;
+  }
+
+  async function load({ force = false } = {}) {
+    if (busy) return;
+    busy = true;
+    notice.hidden = true;
+
+    const cached = readCfCache();
+    const isFresh = cached && Date.now() - cached.savedAt < CF_CACHE_MINUTES * 60000;
+
+    // Recent saved stats: show them instantly without calling the API
+    if (cached && isFresh && !force) {
+      renderAll(cached);
+      show("content");
+      busy = false;
+      return;
+    }
+
+    loadingText.textContent = "Loading Codeforces stats…";
+    show("loading");
+
+    try {
+      // Three calls, spaced out by cfRequest. Each part is shown as soon as it arrives.
+      const [info] = await cfRequest("user.info", { handles: CF_HANDLE });
+      renderProfile(info);
+      el("cfContestCount").textContent = "…";
+      el("cfSolved").textContent = "…";
+      el("cfUpdated").textContent = "Loading contest history and solved problems…";
+      show("content");
+
+      const contests = await cfRequest("user.rating", { handle: CF_HANDLE });
+      renderContests(contests);
+
+      const submissions = await cfRequest("user.status", { handle: CF_HANDLE });
+      const stats = { info, contests, solved: countSolved(submissions), savedAt: Date.now() };
+      writeCfCache(stats);
+      renderAll(stats);
+    } catch (error) {
+      if (cached) {
+        // Older saved stats are better than an empty box: show them with a note
+        renderAll(cached);
+        notice.textContent = `Live update failed, so these are saved stats from ${minutesAgo(cached.savedAt)}. ${cfErrorMessage(error)}`;
+        notice.hidden = false;
+        show("content");
+      } else {
+        errorText.textContent = cfErrorMessage(error);
+        show("error");
+      }
+    } finally {
+      busy = false;
+    }
+  }
+
+  el("cfRetry").addEventListener("click", () => load({ force: true }));
+  el("cfRefresh").addEventListener("click", () => load({ force: true }));
+
+  // Only call the API when the section is about to scroll into view
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        observer.disconnect();
+        load();
+      }
+    },
+    { rootMargin: "300px 0px" }
+  );
+  observer.observe(panel);
+}
+
+/* ---------- 6. Contact form validation ---------- */
 function setupContactForm() {
   const form = document.getElementById("contactForm");
   const status = document.getElementById("formStatus");
@@ -323,7 +614,7 @@ function setupContactForm() {
   });
 }
 
-/* ---------- 6. Footer year ---------- */
+/* ---------- 7. Footer year ---------- */
 function setYear() {
   document.getElementById("year").textContent = new Date().getFullYear();
 }
@@ -334,6 +625,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupMobileNav();
   setupActiveLinks();
   setupProjects();
+  setupCodeforces();
   setupContactForm();
   setYear();
 });

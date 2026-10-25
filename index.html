@@ -31,6 +31,7 @@
         <li><a class="nav__link" href="#about">About</a></li>
         <li><a class="nav__link" href="#skills">Skills</a></li>
         <li><a class="nav__link" href="#projects">Projects</a></li>
+        <li><a class="nav__link" href="#codeforces">Codeforces</a></li>
         <li><a class="nav__link" href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -119,6 +120,71 @@
         <p class="empty-state__title">No projects found</p>
         <p class="empty-state__text">Nothing matches your search. Try another word or show every project.</p>
         <button class="btn btn--ghost" type="button" id="clearFilters">Clear filters</button>
+      </div>
+    </section>
+
+    <!-- ========== Codeforces (live data from a public API) ========== -->
+    <section id="codeforces" class="cf container">
+      <h2 class="section-title">Competitive Programming</h2>
+      <p class="section-intro">
+        Live stats from my <a href="https://codeforces.com/profile/Nasertmp" target="_blank" rel="noopener">Codeforces profile</a>,
+        loaded from the Codeforces API.
+      </p>
+
+      <div class="cf__panel" id="cfPanel" aria-busy="true">
+        <!-- 1. Loading -->
+        <div class="cf__loading" id="cfLoading" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="cfLoadingText">Loading Codeforces stats…</span>
+        </div>
+
+        <!-- 2. Error -->
+        <div class="cf__error" id="cfError" role="alert" hidden>
+          <i class="fa-solid fa-triangle-exclamation cf__error-icon" aria-hidden="true"></i>
+          <p class="cf__error-title">Couldn't load Codeforces stats</p>
+          <p class="cf__error-text" id="cfErrorText"></p>
+          <div class="cf__error-actions">
+            <button class="btn btn--primary" type="button" id="cfRetry">Try again</button>
+            <a class="btn btn--ghost" href="https://codeforces.com/profile/Nasertmp" target="_blank" rel="noopener">Open profile on Codeforces</a>
+          </div>
+        </div>
+
+        <!-- 3. Data (filled in by js/script.js) -->
+        <div class="cf__content" id="cfContent" hidden>
+          <p class="cf__notice" id="cfNotice" hidden></p>
+
+          <div class="cf__profile">
+            <img class="cf__avatar" id="cfAvatar" alt="" width="64" height="64" hidden>
+            <div>
+              <p class="cf__handle" id="cfHandle"></p>
+              <p class="cf__rank" id="cfRank"></p>
+            </div>
+          </div>
+
+          <dl class="cf__stats">
+            <div class="cf__stat"><dt>Current rating</dt><dd id="cfRating">–</dd></div>
+            <div class="cf__stat"><dt>Max rating</dt><dd id="cfMaxRating">–</dd></div>
+            <div class="cf__stat"><dt>Rated contests</dt><dd id="cfContestCount">…</dd></div>
+            <div class="cf__stat"><dt>Problems solved</dt><dd id="cfSolved">…</dd></div>
+          </dl>
+
+          <div class="cf__history">
+            <h3 class="cf__subtitle">Rating history</h3>
+            <div class="cf__chart" id="cfChart"><p class="cf__placeholder">Loading contest history…</p></div>
+          </div>
+
+          <div class="cf__recent">
+            <h3 class="cf__subtitle">Recent contests</h3>
+            <ul class="cf__contests" id="cfContests"><li class="cf__placeholder">Loading…</li></ul>
+          </div>
+
+          <div class="cf__footer">
+            <p class="cf__updated" id="cfUpdated"></p>
+            <button class="btn btn--ghost btn--small" type="button" id="cfRefresh">
+              <i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
