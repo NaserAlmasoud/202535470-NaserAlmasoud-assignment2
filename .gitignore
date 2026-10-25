@@ -13,3 +13,8 @@ node_modules/
 
 # Environment files
 .env
+
+# AI evidence goes on Blackboard, never in the repository
+conversations/
+artifacts/
+*-ai-evidence.zip
