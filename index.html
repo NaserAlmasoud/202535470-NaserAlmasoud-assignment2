@@ -131,59 +131,33 @@
         loaded from the Codeforces API.
       </p>
 
-      <div class="cf__panel" id="cfPanel" aria-busy="true">
-        <!-- 1. Loading -->
+      <div class="cf__panel">
+        <!-- Loading -->
         <div class="cf__loading" id="cfLoading" role="status">
           <span class="spinner" aria-hidden="true"></span>
-          <span id="cfLoadingText">Loading Codeforces stats…</span>
+          <span>Loading Codeforces stats…</span>
         </div>
 
-        <!-- 2. Error -->
+        <!-- Error -->
         <div class="cf__error" id="cfError" role="alert" hidden>
           <i class="fa-solid fa-triangle-exclamation cf__error-icon" aria-hidden="true"></i>
           <p class="cf__error-title">Couldn't load Codeforces stats</p>
-          <p class="cf__error-text" id="cfErrorText"></p>
+          <p class="cf__error-text">Codeforces may be busy or you may be offline. Please try again in a moment.</p>
           <div class="cf__error-actions">
             <button class="btn btn--primary" type="button" id="cfRetry">Try again</button>
             <a class="btn btn--ghost" href="https://codeforces.com/profile/Nasertmp" target="_blank" rel="noopener">Open profile on Codeforces</a>
           </div>
         </div>
 
-        <!-- 3. Data (filled in by js/script.js) -->
-        <div class="cf__content" id="cfContent" hidden>
-          <p class="cf__notice" id="cfNotice" hidden></p>
-
-          <div class="cf__profile">
-            <img class="cf__avatar" id="cfAvatar" alt="" width="64" height="64" hidden>
-            <div>
-              <p class="cf__handle" id="cfHandle"></p>
-              <p class="cf__rank" id="cfRank"></p>
-            </div>
-          </div>
-
+        <!-- Data (filled in by js/script.js) -->
+        <div id="cfContent" hidden>
+          <p class="cf__handle" id="cfHandle"></p>
           <dl class="cf__stats">
-            <div class="cf__stat"><dt>Current rating</dt><dd id="cfRating">–</dd></div>
-            <div class="cf__stat"><dt>Max rating</dt><dd id="cfMaxRating">–</dd></div>
-            <div class="cf__stat"><dt>Rated contests</dt><dd id="cfContestCount">…</dd></div>
-            <div class="cf__stat"><dt>Problems solved</dt><dd id="cfSolved">…</dd></div>
+            <div class="cf__stat"><dt>Rating</dt><dd id="cfRating"></dd></div>
+            <div class="cf__stat"><dt>Max rating</dt><dd id="cfMaxRating"></dd></div>
+            <div class="cf__stat"><dt>Rank</dt><dd id="cfRank"></dd></div>
+            <div class="cf__stat"><dt>Max rank</dt><dd id="cfMaxRank"></dd></div>
           </dl>
-
-          <div class="cf__history">
-            <h3 class="cf__subtitle">Rating history</h3>
-            <div class="cf__chart" id="cfChart"><p class="cf__placeholder">Loading contest history…</p></div>
-          </div>
-
-          <div class="cf__recent">
-            <h3 class="cf__subtitle">Recent contests</h3>
-            <ul class="cf__contests" id="cfContests"><li class="cf__placeholder">Loading…</li></ul>
-          </div>
-
-          <div class="cf__footer">
-            <p class="cf__updated" id="cfUpdated"></p>
-            <button class="btn btn--ghost btn--small" type="button" id="cfRefresh">
-              <i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh
-            </button>
-          </div>
         </div>
       </div>
     </section>
@@ -191,7 +165,7 @@
     <!-- ========== Contact ========== -->
     <section id="contact" class="contact container">
       <h2 class="section-title">Contact</h2>
-      <p class="contact__intro">Have a question or an idea for a project? Send me a message. Your draft is saved in this browser as you type.</p>
+      <p class="contact__intro">Have a question or an idea for a project? Send me a message.</p>
 
       <!-- No backend: the form is validated and handled in js/script.js -->
       <form class="form" id="contactForm" novalidate>
@@ -208,17 +182,11 @@
         </div>
 
         <div class="form__field">
-          <div class="form__label-row">
-            <label for="message">Message</label>
-            <span class="form__counter" id="messageCount" aria-live="polite">0 / 500</span>
-          </div>
-          <textarea id="message" name="message" rows="5" required aria-describedby="messageCount"></textarea>
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
           <p class="form__error" id="messageError" aria-live="polite"></p>
         </div>
 
-        <p class="form__draft" id="draftNote" hidden>
-          <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Your unsent draft was restored.
-        </p>
 
         <button class="btn btn--primary" type="submit">Send message</button>
         <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
