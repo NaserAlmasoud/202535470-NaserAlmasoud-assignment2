@@ -8,6 +8,7 @@ My personal portfolio website, built with plain HTML, CSS and JavaScript. Assign
 
 | Requirement | Feature | Where |
 |---|---|---|
+| Dynamic content | **Time-of-day greeting**: the headline says "Good morning / afternoon / evening" based on the visitor's clock | `#about`, `setGreeting()` |
 | Dynamic content | **Project filter**: All / AI / Data Science / Web Dev buttons show only matching projects. Cards are built from a data array. | `#projects`, `setupProjects()` |
 | Data handling | **Live Codeforces stats** (rating, max rating, rank, max rank) fetched from the Codeforces API | `#codeforces`, `loadCodeforces()` |
 | Data handling | **Contact form validation** with a confirmation message | `#contact`, `setupContactForm()` |
@@ -37,7 +38,7 @@ Kept from Assignment 1: About and Skills sections, responsive layout with a mobi
 │   ├── styles.css              # Layout, components, animations, breakpoints
 │   └── fonts/                  # Manrope + Source Serif 4 (WOFF2)
 ├── js/
-│   └── script.js               # Menu, project filter, Codeforces API, form, scroll animation
+│   └── script.js               # Greeting, menu, project filter, Codeforces API, form, scroll animation
 ├── assets/
 │   └── images/                 # Profile illustration
 ├── docs/

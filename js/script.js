@@ -1,11 +1,21 @@
 /* =========================================================
    Portfolio interactivity
+   0. Greeting by time of day             (dynamic content)
    1. Mobile navigation menu
    2. Projects: filter by category        (dynamic content)
    3. Codeforces stats from the public API (data handling + feedback)
    4. Contact form validation             (user feedback)
    5. Fade sections in while scrolling    (animation)
    ========================================================= */
+
+/* ---------- 0. Greeting by time of day ---------- */
+function setGreeting() {
+  const hour = new Date().getHours(); // 0–23 on the visitor's clock
+  let greeting = "Good evening.";
+  if (hour < 12) greeting = "Good morning.";
+  else if (hour < 18) greeting = "Good afternoon.";
+  document.getElementById("greeting").textContent = greeting;
+}
 
 /* ---------- 1. Mobile navigation ---------- */
 function setupMobileNav() {
@@ -191,6 +201,7 @@ function setupReveal() {
 
 /* Run everything once the HTML is ready */
 document.addEventListener("DOMContentLoaded", () => {
+  setGreeting();
   setupMobileNav();
   setupProjects();
   setupContactForm();

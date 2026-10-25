@@ -6,7 +6,7 @@ A single-page static website with no server, database or build step. The browser
 
 | Assignment 2 requirement | Implementation |
 |---|---|
-| Dynamic content | Project category filter (`setupProjects`) |
+| Dynamic content | Time-of-day greeting (`setGreeting`) and project category filter (`setupProjects`) |
 | Data handling | Codeforces API with `fetch` (`loadCodeforces`); contact form validation (`setupContactForm`) |
 | Animation & transitions | `fadeUp` keyframes, hover transitions, scroll-in sections (`setupReveal`) |
 | Error handling & feedback | Loading spinner, API error message with retry, inline form errors, success message |
@@ -66,6 +66,7 @@ All setup runs once the HTML is ready (`DOMContentLoaded`).
 
 | Function | What it does |
 |---|---|
+| `setGreeting()` | Shows "Good morning" (before 12:00), "Good afternoon" (12:00–17:59) or "Good evening" (18:00+), using the visitor's clock |
 | `setupMobileNav()` | Opens/closes the mobile menu, updates `aria-expanded`, closes on link click or Escape |
 | `setupProjects()` | Builds project cards from `PROJECTS` and filters them when a button is clicked |
 | `loadCodeforces()` | Fetches Codeforces stats and shows the loading, error or data state |
@@ -159,7 +160,7 @@ Design decisions:
 
 ## 7. Performance
 
-- No frameworks: about 200 lines of JavaScript and no build step.
+- No frameworks: about 210 lines of JavaScript and no build step.
 - Project covers are CSS gradients and icons, not images.
 - Fonts are self-hosted WOFF2 files with `font-display: swap`.
 - One small API request (`user.info`) instead of several.
@@ -180,6 +181,7 @@ The script avoids very new JavaScript functions. An earlier version used `Object
 
 ## 9. Testing checklist
 
+- [x] Greeting matches the time of day
 - [x] Each filter button shows only its category; **All** shows all 7 projects
 - [x] Codeforces stats load; with the network blocked, the error message and **Try again** work
 - [x] Form shows errors for empty/invalid input and a confirmation for valid input
