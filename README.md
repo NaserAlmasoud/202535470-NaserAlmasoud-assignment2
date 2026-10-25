@@ -2,7 +2,7 @@
 
 My personal portfolio website, built with plain HTML, CSS and JavaScript. Assignment 2 builds on [Assignment 1](https://github.com/NaserAlmasoud/202535470-NaserAlmasoud-assignment1) and makes the site interactive: projects can be filtered by area, my Codeforces stats load live from a public API, the contact form gives clear feedback, and sections animate into view.
 
-**Live demo:** https://naseralmasoud.github.io/202535470-NaserAlmasoud-assignment2/ *(after GitHub Pages is enabled, see [Deployment](#deployment-github-pages))*
+**Live demo:** https://naseralmasoud.github.io/202535470-NaserAlmasoud-assignment2/
 
 ## What's new in Assignment 2
 
