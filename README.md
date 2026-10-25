@@ -1,4 +1,4 @@
-# Personal Portfolio – Assignment 1
+# Personal Portfolio – Assignment 2
 
 A simple, responsive personal portfolio built with plain HTML, CSS, and JavaScript. It introduces me, shows a few of my projects, and includes a contact form. This is the foundation for the professional portfolio I will expand in later assignments.
 
